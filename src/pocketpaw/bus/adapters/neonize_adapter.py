@@ -331,3 +331,4 @@ class NeonizeAdapter(BaseChannelAdapter):
                 await self._client.send_message(jid, text)
         except Exception as e:
             logger.error(f"Neonize send error: {e}")
+            
