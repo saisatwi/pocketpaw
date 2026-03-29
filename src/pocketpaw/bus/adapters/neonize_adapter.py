@@ -241,6 +241,7 @@ class NeonizeAdapter(BaseChannelAdapter):
         """Stop neonize client."""
         if self._client:
             try:
+                # Cancel any pending connection attempt unconditionally
                 if self._connect_future:
                     self._connect_future.cancel()
 
