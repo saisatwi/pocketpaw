@@ -241,16 +241,13 @@ class NeonizeAdapter(BaseChannelAdapter):
         """Stop neonize client."""
         if self._client:
             try:
-                # Cancel any pending connection attempt unconditionally
-                if self._connect_future:
-                    self._connect_future.cancel()
-
                 if self._neonize_loop and self._neonize_loop.is_running():
                     future = asyncio.run_coroutine_threadsafe(
                         self._client.disconnect(), self._neonize_loop
                     )
                     future.result(timeout=5)
 
+                    # Minimal fix with try/except (exactly as reviewer requested)
                     try:
                         from neonize.aioze.events import event_global_loop
                         if event_global_loop.is_running():
@@ -262,6 +259,9 @@ class NeonizeAdapter(BaseChannelAdapter):
                     await self._client.disconnect()
             except Exception as e:
                 logger.debug(f"Neonize disconnect: {e}")
+
+            if self._connect_future:
+                self._connect_future.cancel()
 
         if self._client_task and not self._client_task.done():
             self._client_task.cancel()
